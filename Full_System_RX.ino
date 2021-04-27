@@ -14,6 +14,10 @@
 #define BLUE 4
 
 SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
+
+String input = "";
+byte incomingByte;
+
 void setup(){
   Serial.begin(9600);
   HC12.begin(9600);
@@ -27,29 +31,34 @@ void setup(){
 
 void loop()
 {
-  String input = "";
+  delay(100);
+  
   //receiving data
-  if (HC12.available())
-  {
-    byte incomingByte;
-    while (HC12.available()){     //if HC-12 has recieved
-      incomingByte = HC12.read(); //read next byte
+  input = "";
+  while (HC12.available()) //if HC-12 has recieved
+  {     
+    incomingByte = HC12.read(); //read next byte
+    if(char(incomingByte) != '\n')
+    {
       input += char(incomingByte);  //concatenate to 'input'
     }
-    Serial.print(input);  //print that data to serial monitor
-    digitalWrite(2, HIGH);
-    delay(500);
-    digitalWrite(2, LOW);
   }
-
+  
   if(input == "Danger")
   {
     changeColor("red");
+    Serial.println("Changing to red");
   }
-  if(input == "Hazardous")
+  else if(input == "Hazard")
   {
     changeColor("blue");
+    Serial.println("Changing to blue");
   }
+  else if (input != "")
+  {
+    Serial.println(input);
+  }
+  
 
   //sending data
   while(Serial.available()){    //if we have inputted data to serial monitor
