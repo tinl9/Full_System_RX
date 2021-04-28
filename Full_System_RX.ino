@@ -80,8 +80,8 @@ void RGB_color(int red_light_value, int green_light_value, int blue_light_value)
 
 void changeColor(String color)
 {
-  Serial.print("Contents of EEPROM: ");
-  Serial.println(EEPROM.read(0));
+//  Serial.print("Contents of EEPROM: ");
+//  Serial.println(EEPROM.read(0));
   if(color == "red")
   {
     RGB_color(255, 0, 0);
@@ -95,11 +95,15 @@ void changeColor(String color)
     Serial.println("CHanging to blue");
     RGB_color(0,0,0);
     digitalWrite(BLUE, HIGH);
-    
   }
   else if(color == "yellow")
   {
     RGB_color(255, 50, 0);
+  }
+  else if(color == "white")
+  {
+    RGB_color(255, 50, 0);
+    digitalWrite(BLUE, HIGH);
   }
   else
   {
@@ -119,6 +123,7 @@ void checkSignal(String words)
     Serial.println("Writing to 101 flash memory");
     EEPROM.write(0, DANGER);
     EEPROM.commit();
+
   }
   else if(words == "Hazard")
   {
@@ -127,7 +132,6 @@ void checkSignal(String words)
     EEPROM.write(0, HAZARD);
     EEPROM.commit();    
   }
-
   else
   {
     counter++;
