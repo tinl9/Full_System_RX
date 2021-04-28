@@ -18,7 +18,8 @@
 #define DANGER 101
 #define HAZARD 102
 
-#define flash_time_ms 500
+#define on_time_ms 500
+#define off_time_ms 2000
 
 SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
 
@@ -81,8 +82,6 @@ void RGB_color(int red_light_value, int green_light_value, int blue_light_value)
 
 void changeColor(String color)
 {
-//  Serial.print("Contents of EEPROM: ");
-//  Serial.println(EEPROM.read(0));
   if(color == "red")
   {
     RGB_color(255, 0, 0);
@@ -93,7 +92,6 @@ void changeColor(String color)
   }
   else if(color == "blue")
   {
-    Serial.println("CHanging to blue");
     RGB_color(0,0,0);
     digitalWrite(BLUE, HIGH);
   }
@@ -128,6 +126,7 @@ void checkSignal(String words)
     EEPROM.write(0, DANGER);
     EEPROM.commit();
     changeColor("red");
+    currentColor = "red";
   }
   else if(words == "Hazard")
   {
@@ -135,15 +134,16 @@ void checkSignal(String words)
     Serial.println("Writing to 102 flash memory");
     EEPROM.write(0, HAZARD);
     EEPROM.commit();  
-    changeColor("blue");      
+    changeColor("blue");
+    currentColor = "blue";      
   }
 }
 
 void flashLED(void)
 {
-  delay(flash_time_ms);
+  delay(on_time_ms);
   RGB_color(0, 0, 0);  
-  delay(flash_time_ms);
+  delay(off_time_ms);
   changeColor(currentColor);
   
 }
