@@ -15,7 +15,7 @@
 
 SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
 
-String input = "";
+String sig = "";
 byte incomingByte;
 
 void setup(){
@@ -34,30 +34,30 @@ void loop()
   delay(100);
   
   //receiving data
-  input = "";
+  sig = "";
   while (HC12.available()) //if HC-12 has recieved
   {     
     incomingByte = HC12.read(); //read next byte
     if(char(incomingByte) != '\n')
     {
-      input += char(incomingByte);  //concatenate to 'input'
+      sig += char(incomingByte);  //concatenate to 'sig'
     }
   }
   
-  if(input == "Danger")
+  if(sig == "Danger")
   {
     changeColor("red");
     Serial.println("Changing to red");
   }
-  else if(input == "Hazard")
+  else if(sig == "Hazard")
   {
     changeColor("blue");
     Serial.println("Changing to blue");
   }
-  else if (input != "")
+  else if (sig != "")
   {
-    changeColor(input);    
-    Serial.println(input);
+    changeColor(sig);    
+    Serial.println(sig);
   }
   
 
