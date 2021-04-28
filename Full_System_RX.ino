@@ -22,6 +22,7 @@ SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
 
 byte incomingByte;
 int counter = 0;
+String currentColor = "";
 
 void setup(){
   Serial.begin(9600);
@@ -42,10 +43,9 @@ void loop()
   delay(100);
   String sig = recieveData();
   checkSignal(sig);
-  sendData();
-//  changeLED(sig);  
-//  delay(1000);
-//  RGB_color(0, 0, 0);
+  sendData(); 
+  delay(1000);
+  RGB_color(0, 0, 0);
   counter++;
 }
 String recieveData(void)
@@ -113,7 +113,13 @@ void changeColor(String color)
 
 void checkSignal(String words)
 {
- 
+  if (words != "")
+  {
+    changeColor(words);
+    currentColor = words;
+    Serial.println(words);
+  }   
+    
   if(words == "Danger")
   {
     counter = 0;
@@ -130,13 +136,5 @@ void checkSignal(String words)
     EEPROM.commit();  
     changeColor("blue");      
   }
-  if (words != "")
-  {
-    changeColor(words);
-    Serial.println(words);
-  }   
-  else
-  {
-    counter++;
-  }
+
 }
