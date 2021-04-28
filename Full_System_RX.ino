@@ -20,8 +20,8 @@
 
 SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
 
-String sig = "";
 byte incomingByte;
+int counter = 0;
 
 void setup(){
   Serial.begin(9600);
@@ -40,29 +40,34 @@ void setup(){
 void loop()
 {
   delay(100);
-  recieveData();
+  String sig = recieveData();
   checkSignal(sig);
-  sendData();  
-
+  sendData();
+//  changeLED();  
+//  delay(1000);
+//  RGB_color(0, 0, 0);
+  counter++;
 }
-void recieveData(void)
+String recieveData(void)
 {
+  String data = "";
   //receiving data
-  sig = "";
   while (HC12.available()) //if HC-12 has recieved
   {     
     incomingByte = HC12.read(); //read next byte
     if(char(incomingByte) != '\n')
     {
-      sig += char(incomingByte);  //concatenate to 'sig'
+      data += char(incomingByte);  //concatenate to 'data'
     }
-  } 
+  }
+  return data; 
 }
 
 void sendData(void)
 {
   //sending data
-  while(Serial.available()){    //if we have inputted data to serial monitor
+  while(Serial.available())//if we have inputted data to serial monitor
+  {    
     HC12.write(Serial.read());  //send data to other HC12
   }  
 }
@@ -106,16 +111,14 @@ void checkSignal(String words)
 {
   if(words == "Danger")
   {
-    Serial.println("Changing to red");    
-    changeColor("red");
+    counter = 0;
     Serial.println("Writing to 101 flash memory");
     EEPROM.write(0, DANGER);
     EEPROM.commit();
   }
   else if(words == "Hazard")
   {
-    changeColor("blue");
-    Serial.println("Changing to blue");
+    counter = 0;
     Serial.println("Writing to 102 flash memory");
     EEPROM.write(0, HAZARD);
     EEPROM.commit();    
@@ -124,5 +127,24 @@ void checkSignal(String words)
   {
     changeColor(words);    
     Serial.println(words);
+  }
+  else
+  {
+    counter++;
+  }
+}
+
+void changeLED(void)
+{
+  int currentState = EEPROM.read(0);
+  if(currentState = DANGER)
+  {
+    Serial.println("Changing to red");    
+    changeColor("red");
+  }
+  if(currentState = HAZARD)
+  {
+    Serial.println("Changing to blue");  
+    changeColor("blue");
   }
 }
