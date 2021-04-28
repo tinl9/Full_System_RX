@@ -40,7 +40,13 @@ void setup(){
 void loop()
 {
   delay(100);
-  
+  recieveData();
+  checkSignal(sig);
+  sendData();  
+
+}
+void recieveData(void)
+{
   //receiving data
   sig = "";
   while (HC12.available()) //if HC-12 has recieved
@@ -50,18 +56,18 @@ void loop()
     {
       sig += char(incomingByte);  //concatenate to 'sig'
     }
-  }  
-  
-  checkSignal(sig);
-  
+  } 
+}
+
+void sendData(void)
+{
   //sending data
   while(Serial.available()){    //if we have inputted data to serial monitor
     HC12.write(Serial.read());  //send data to other HC12
-  }
+  }  
 }
-
 void RGB_color(int red_light_value, int green_light_value, int blue_light_value)
- {
+{
   analogWrite(RED, red_light_value);
   analogWrite(GREEN, green_light_value);
   digitalWrite(BLUE, LOW);
