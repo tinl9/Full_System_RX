@@ -8,10 +8,15 @@
  * Pin 5 open or Power if transmit receive (GND if configuring)
  */
 #include <SoftwareSerial.h>
+#include<FlashAsEEPROM.h>
 
 #define RED 2
 #define GREEN 1
 #define BLUE 0
+
+#define CLEAR 100
+#define DANGER 101
+#define HAZARD 102
 
 SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
 
@@ -21,6 +26,9 @@ byte incomingByte;
 void setup(){
   Serial.begin(9600);
   HC12.begin(9600);
+  while (!Serial && !HC12) {
+    Serial.println("Waiting..."); // wait for serial port to connect. Needed for native USB port only
+  }  
   pinMode(2,OUTPUT);
 
   pinMode(RED, OUTPUT);
@@ -43,7 +51,9 @@ void loop()
       sig += char(incomingByte);  //concatenate to 'sig'
     }
   }  
+  
   checkSignal(sig);
+  
   //sending data
   while(Serial.available()){    //if we have inputted data to serial monitor
     HC12.write(Serial.read());  //send data to other HC12
@@ -59,6 +69,8 @@ void RGB_color(int red_light_value, int green_light_value, int blue_light_value)
 
 void changeColor(String color)
 {
+  Serial.print("Contents of EEPROM: ");
+  Serial.println(EEPROM.read(0));
   if(color == "red")
   {
     RGB_color(255, 0, 0);
@@ -86,15 +98,21 @@ void changeColor(String color)
 
 void checkSignal(String words)
 {
-    if(words == "Danger")
+  if(words == "Danger")
   {
+    Serial.println("Changing to red");    
     changeColor("red");
-    Serial.println("Changing to red");
+    Serial.println("Writing to 101 flash memory");
+    EEPROM.write(0, DANGER);
+    EEPROM.commit();
   }
   else if(words == "Hazard")
   {
     changeColor("blue");
     Serial.println("Changing to blue");
+    Serial.println("Writing to 102 flash memory");
+    EEPROM.write(0, HAZARD);
+    EEPROM.commit();    
   }
   else if (words != "")
   {
