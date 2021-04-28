@@ -20,12 +20,14 @@
 
 #define on_time_ms 500
 #define off_time_ms 2000
+#define maxTimeBetweenSignalSeconds 30
 
 SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
 
 byte incomingByte;
-int counter = 0;
 String currentColor = "";
+int currentTime = 0;
+int resetTime = 0;
 
 void setup(){
   Serial.begin(9600);
@@ -43,12 +45,19 @@ void setup(){
 
 void loop()
 {
+  currentTime = millis()/1000;
   delay(100);
   String sig = recieveData();
   checkSignal(sig);
-  sendData(); 
+  sendDataFromSerial(); 
   flashLED();
-  counter++;
+  if(currentTime - resetTime > maxTimeBetweenSignalSeconds)
+  {
+    Serial.println("Too much time between signal from master");
+    //Do stuff
+    changeColor("yellow");
+    currentColor = "yellow";
+  }
 }
 String recieveData(void)
 {
@@ -65,7 +74,7 @@ String recieveData(void)
   return data; 
 }
 
-void sendData(void)
+void sendDataFromSerial(void)
 {
   //sending data
   while(Serial.available())//if we have inputted data to serial monitor
@@ -121,8 +130,9 @@ void checkSignal(String words)
     
   if(words == "Danger")
   {
-    counter = 0;
+    resetTime = millis()/1000;
     Serial.println("Writing to 101 flash memory");
+    Serial.printf("Reset timer to: %d s\n", resetTime);    
     EEPROM.write(0, DANGER);
     EEPROM.commit();
     changeColor("red");
@@ -130,8 +140,9 @@ void checkSignal(String words)
   }
   else if(words == "Hazard")
   {
-    counter = 0;
+    resetTime = millis()/1000;
     Serial.println("Writing to 102 flash memory");
+    Serial.printf("Reset timer to: %d s\n", resetTime);
     EEPROM.write(0, HAZARD);
     EEPROM.commit();  
     changeColor("blue");
