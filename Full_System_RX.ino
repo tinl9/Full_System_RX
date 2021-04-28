@@ -109,6 +109,10 @@ void changeColor(String color)
 
 void checkSignal(String words)
 {
+  if (words != "")
+  {
+    Serial.println(words);
+  }  
   if(words == "Danger")
   {
     counter = 0;
@@ -123,11 +127,7 @@ void checkSignal(String words)
     EEPROM.write(0, HAZARD);
     EEPROM.commit();    
   }
-  else if (words != "")
-  {
-    changeColor(words);    
-    Serial.println(words);
-  }
+
   else
   {
     counter++;
