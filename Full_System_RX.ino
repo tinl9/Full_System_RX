@@ -42,25 +42,8 @@ void loop()
     {
       sig += char(incomingByte);  //concatenate to 'sig'
     }
-  }
-  
-  if(sig == "Danger")
-  {
-    changeColor("red");
-    Serial.println("Changing to red");
-  }
-  else if(sig == "Hazard")
-  {
-    changeColor("blue");
-    Serial.println("Changing to blue");
-  }
-  else if (sig != "")
-  {
-    changeColor(sig);    
-    Serial.println(sig);
-  }
-  
-
+  }  
+  checkSignal(sig);
   //sending data
   while(Serial.available()){    //if we have inputted data to serial monitor
     HC12.write(Serial.read());  //send data to other HC12
@@ -98,5 +81,24 @@ void changeColor(String color)
   else
   {
     RGB_color(0, 0, 0);
+  }
+}
+
+void checkSignal(String words)
+{
+    if(words == "Danger")
+  {
+    changeColor("red");
+    Serial.println("Changing to red");
+  }
+  else if(words == "Hazard")
+  {
+    changeColor("blue");
+    Serial.println("Changing to blue");
+  }
+  else if (words != "")
+  {
+    changeColor(words);    
+    Serial.println(words);
   }
 }
