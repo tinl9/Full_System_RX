@@ -18,6 +18,8 @@
 #define DANGER 101
 #define HAZARD 102
 
+#define flash_time_ms 500
+
 SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
 
 byte incomingByte;
@@ -44,8 +46,7 @@ void loop()
   String sig = recieveData();
   checkSignal(sig);
   sendData(); 
-  delay(1000);
-  RGB_color(0, 0, 0);
+  flashLED();
   counter++;
 }
 String recieveData(void)
@@ -136,5 +137,13 @@ void checkSignal(String words)
     EEPROM.commit();  
     changeColor("blue");      
   }
+}
 
+void flashLED(void)
+{
+  delay(flash_time_ms);
+  RGB_color(0, 0, 0);  
+  delay(flash_time_ms);
+  changeColor(currentColor);
+  
 }
