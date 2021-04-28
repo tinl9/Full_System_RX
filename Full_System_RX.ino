@@ -9,9 +9,9 @@
  */
 #include <SoftwareSerial.h>
 
-#define RED 6
-#define GREEN 5
-#define BLUE 4
+#define RED 2
+#define GREEN 1
+#define BLUE 0
 
 SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
 
@@ -56,6 +56,7 @@ void loop()
   }
   else if (input != "")
   {
+    changeColor(input);    
     Serial.println(input);
   }
   
@@ -70,7 +71,7 @@ void RGB_color(int red_light_value, int green_light_value, int blue_light_value)
  {
   analogWrite(RED, red_light_value);
   analogWrite(GREEN, green_light_value);
-  analogWrite(BLUE, blue_light_value);
+  digitalWrite(BLUE, LOW);
 }
 
 void changeColor(String color)
@@ -79,12 +80,23 @@ void changeColor(String color)
   {
     RGB_color(255, 0, 0);
   }
-  if(color == "green")
+  else if(color == "green")
   {
     RGB_color(0, 255, 0);
   }
-  if(color =="blue")
+  else if(color == "blue")
   {
-    RGB_color(0, 0, 255); 
+    Serial.println("CHanging to blue");
+    RGB_color(0,0,0);
+    digitalWrite(BLUE, HIGH);
+    
+  }
+  else if(color == "yellow")
+  {
+    RGB_color(255, 50, 0);
+  }
+  else
+  {
+    RGB_color(0, 0, 0);
   }
 }
