@@ -43,7 +43,7 @@ void loop()
   String sig = recieveData();
   checkSignal(sig);
   sendData();
-//  changeLED();  
+//  changeLED(sig);  
 //  delay(1000);
 //  RGB_color(0, 0, 0);
   counter++;
@@ -113,42 +113,30 @@ void changeColor(String color)
 
 void checkSignal(String words)
 {
-  if (words != "")
-  {
-    Serial.println(words);
-  }  
+ 
   if(words == "Danger")
   {
     counter = 0;
     Serial.println("Writing to 101 flash memory");
     EEPROM.write(0, DANGER);
     EEPROM.commit();
-
+    changeColor("red");
   }
   else if(words == "Hazard")
   {
     counter = 0;
     Serial.println("Writing to 102 flash memory");
     EEPROM.write(0, HAZARD);
-    EEPROM.commit();    
+    EEPROM.commit();  
+    changeColor("blue");      
   }
+  if (words != "")
+  {
+    changeColor(words);
+    Serial.println(words);
+  }   
   else
   {
     counter++;
-  }
-}
-
-void changeLED(void)
-{
-  int currentState = EEPROM.read(0);
-  if(currentState = DANGER)
-  {
-    Serial.println("Changing to red");    
-    changeColor("red");
-  }
-  if(currentState = HAZARD)
-  {
-    Serial.println("Changing to blue");  
-    changeColor("blue");
   }
 }
