@@ -123,6 +123,7 @@ void checkSignal(String words)
 {
   if (words != "")
   {
+    resetTime = millis()/1000;    
     changeColor(words);
     currentColor = words;
     Serial.println(words);
@@ -131,22 +132,40 @@ void checkSignal(String words)
   if(words == "Danger")
   {
     resetTime = millis()/1000;
-    Serial.println("Writing to 101 flash memory");
-    Serial.printf("Reset timer to: %d s\n", resetTime);    
-    EEPROM.write(0, DANGER);
-    EEPROM.commit();
     changeColor("red");
     currentColor = "red";
+    if(EEPROM.read(0) != DANGER)
+    {
+      Serial.println("Writing to 101 flash memory");
+      Serial.printf("Reset timer to: %d s\n", resetTime);    
+      EEPROM.write(0, DANGER);
+      EEPROM.commit();
+    }
+    else
+    {
+      Serial.println("Danger signal already present on EEPROM");
+      Serial.println("Timer reset");      
+    }
+
   }
   else if(words == "Hazard")
   {
     resetTime = millis()/1000;
-    Serial.println("Writing to 102 flash memory");
-    Serial.printf("Reset timer to: %d s\n", resetTime);
-    EEPROM.write(0, HAZARD);
-    EEPROM.commit();  
     changeColor("blue");
-    currentColor = "blue";      
+    currentColor = "blue"; 
+    if(EEPROM.read(0) != HAZARD)
+    {
+      Serial.println("Writing to 102 flash memory");
+      Serial.printf("Reset timer to: %d s\n", resetTime);
+      EEPROM.write(0, HAZARD);
+      EEPROM.commit();  
+    }
+    else
+    {
+      Serial.println("Hazard signal already present on EEPROM");
+      Serial.println("Timer reset");
+    }
+     
   }
 }
 
