@@ -14,17 +14,13 @@
 #define GREEN 1
 #define BLUE 0
 
-#define RED2  9
-#define GREEN2  8
-#define BLUE2 3
-
 #define CLEAR 100
 #define DANGER 101
 #define HAZARD 102
 
 #define on_time_ms 500
 #define off_time_ms 2000
-#define maxTimeBetweenSignalSeconds 10
+#define maxTimeBetweenSignalSeconds 30
 
 SoftwareSerial HC12(7,6); //HC12 TX Pin, HC12 RX pin
 
@@ -70,8 +66,7 @@ String recieveData(void)
   while (HC12.available()) //if HC-12 has recieved
   {     
     incomingByte = HC12.read(); //read next byte
-    Serial.println(char(incomingByte));
-    if(char(incomingByte) != '\n' && char(incomingByte) != '\r')
+    if(char(incomingByte) != '\n')
     {
       data += char(incomingByte);  //concatenate to 'data'
     }
@@ -92,13 +87,6 @@ void RGB_color(int red_light_value, int green_light_value, int blue_light_value)
   analogWrite(RED, red_light_value);
   analogWrite(GREEN, green_light_value);
   digitalWrite(BLUE, LOW);
-}
-
-void RGB_color2(int red_light_value, int green_light_value, int blue_light_value)
-{
-  analogWrite(RED2, red_light_value);
-  analogWrite(GREEN2, green_light_value);
-  digitalWrite(BLUE2, LOW);
 }
 
 void changeColor(String color)
@@ -140,24 +128,7 @@ void checkSignal(String words)
     currentColor = words;
     Serial.println(words);
   }   
-  if(words == "Clear")
-  {
-    resetTime = millis()/1000;
-    changeColor("white");
-    currentColor = "white";
-    if(EEPROM.read(0) != CLEAR)
-    {
-      Serial.println("Writing to 100 flash memory");
-      Serial.printf("Reset timer to: %d s\n", resetTime);    
-      EEPROM.write(0, CLEAR);
-      EEPROM.commit();
-    }
-    else
-    {
-      Serial.println("Clear signal already present on EEPROM");
-      Serial.println("Timer reset");      
-    }
-  }
+    
   if(words == "Danger")
   {
     resetTime = millis()/1000;
@@ -201,10 +172,8 @@ void checkSignal(String words)
 void flashLED(void)
 {
   delay(on_time_ms);
-  RGB_color(0, 0, 0); 
-  RGB_color2(0, 0, 0); 
+  RGB_color(0, 0, 0);  
   delay(off_time_ms);
   changeColor(currentColor);
-  RGB_color2(255, 5, 0);   
   
 }
